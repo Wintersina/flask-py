@@ -31,7 +31,7 @@ class MenuItem(Base):
          'description': self.description,
          'price': self.price,
          'course': self.item_type,
-         'affiliated_restaurant': self.restaurant_id
+         'affiliated_restaurant': self.restaurant.name
       }
 
 

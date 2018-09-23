@@ -12,11 +12,14 @@ DBsession = sessionmaker(bind = sql_lite_db)
 session = DBsession()
 
 
-@app.route('/restaurants/<int:restaurant_id>/JSON')
+@app.route('/restaurants/<int:restaurant_id>/<int:menu_id>/JSON/')
+def restaurantMenuItemJSON(restaurant_id,menu_id):
+    menuItem = session.query(MenuItem).filter_by(id = menu_id).one()
+    return jsonify(MenuItem=[menuItem.serialize])
+
+@app.route('/restaurants/<int:restaurant_id>/JSON/')
 def restaurantMenuJSON(restaurant_id):
-    restaurantResult = session.query(Restaurant).filter_by(id = restaurant_id)
     menuItems = session.query(MenuItem).filter_by(restaurant_id = restaurant_id)
-    restaurantFinalResult = restaurantResult.one()
     return jsonify(MenuItems=[i.serialize for i in menuItems])
 
 @app.route('/')
