@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, redirect, request, flash
+from flask import Flask, render_template, url_for, redirect, request, flash, jsonify
 import os
 app = Flask(__name__)
 
@@ -11,6 +11,13 @@ Base.metadata.bind = sql_lite_db
 DBsession = sessionmaker(bind = sql_lite_db)
 session = DBsession()
 
+
+@app.route('/restaurants/<int:restaurant_id>/JSON')
+def restaurantMenuJSON(restaurant_id):
+    restaurantResult = session.query(Restaurant).filter_by(id = restaurant_id)
+    menuItems = session.query(MenuItem).filter_by(restaurant_id = restaurant_id)
+    restaurantFinalResult = restaurantResult.one()
+    return jsonify(MenuItems=[i.serialize for i in menuItems])
 
 @app.route('/')
 @app.route('/restaurants/<int:restaurant_id>/')

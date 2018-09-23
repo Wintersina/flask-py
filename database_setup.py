@@ -7,8 +7,8 @@ from sqlalchemy import create_engine
 #START OF FILE #
 Base = declarative_base()
 
-class Resturant(Base):
-   __tablename__ = 'resturants'
+class Restaurant(Base):
+   __tablename__ = 'restaurants'
    id = Column(Integer, primary_key = True)
    name = Column(String(80), nullable = False)
 
@@ -20,10 +20,23 @@ class MenuItem(Base):
    item_type = Column(String( 250))
    price = Column(String(8))
    description = Column(String(250))
-   resturant = relationship(Resturant)
-   resturant_id = Column(Integer, ForeignKey('resturants.id'))
+   restaurant = relationship(Restaurant)
+   restaurant_id = Column(Integer, ForeignKey('restaurants.id'))
+
+   @property
+   def serialize(self):
+      return {
+         'id': self.id,
+         'item_name': self.item_name,
+         'description': self.description,
+         'price': self.price,
+         'course': self.item_type,
+         'affiliated_restaurant': self.restaurant_id
+      }
+
 
 ###END OF FILE ####
-engine = create_engine('sqlite:///resturantmenu.db')
+engine = create_engine('sqlite:///restaurantmenu.db')
 
 Base.metadata.create_all(engine)
+
