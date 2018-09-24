@@ -11,17 +11,19 @@ Base.metadata.bind = sql_lite_db
 DBsession = sessionmaker(bind = sql_lite_db)
 session = DBsession()
 
-
-@app.route('/restaurants/<int:restaurant_id>/<int:menu_id>/JSON/')
+#access JSON for an individual menu item in the resturant.
+@app.route('/restaurants/<int:restaurant_id>/menu/<int:menu_id>/JSON/')
 def restaurantMenuItemJSON(restaurant_id,menu_id):
     menuItem = session.query(MenuItem).filter_by(id = menu_id).one()
     return jsonify(MenuItem=[menuItem.serialize])
 
-@app.route('/restaurants/<int:restaurant_id>/JSON/')
+#get a list of all menu items in JSON from a single restaurant.
+@app.route('/restaurants/<int:restaurant_id>/menu/JSON/')
 def restaurantMenuJSON(restaurant_id):
     menuItems = session.query(MenuItem).filter_by(restaurant_id = restaurant_id)
     return jsonify(MenuItems=[i.serialize for i in menuItems])
 
+#root, show all menu items from a single restaurant
 @app.route('/')
 @app.route('/restaurants/<int:restaurant_id>/')
 def restaurantMenu(restaurant_id):
@@ -33,7 +35,7 @@ def restaurantMenu(restaurant_id):
 
     return output
 
-#Create a new menu item
+#Create a new menu item for the selected restaurant
 @app.route('/restaurants/<int:restaurant_id>/new/', methods=['GET','POST'])
 def newMenuItem(restaurant_id):
     if request.method == 'POST':
@@ -47,7 +49,7 @@ def newMenuItem(restaurant_id):
         output = render_template('newMenuItem.html', restaurant_id= restaurant_id)
         return output
 
-# Task 2: Create route for editMenuItem function here
+#edit a menu item for the selected restaurant
 @app.route('/restaurants/<int:restaurant_id>/<int:menu_id>/edit/', methods= ['GET','POST'])
 def editMenuItem(restaurant_id, menu_id):
     editItem = session.query(MenuItem).filter_by(id = menu_id).one()
@@ -61,7 +63,8 @@ def editMenuItem(restaurant_id, menu_id):
     else:
         output = render_template('menuitemedit.html',restaurant_id= restaurant_id, menu_id=menu_id,i_name=editItem.item_name)
         return output
-# Task 3: Create a route for deleteMenuItem function here
+
+# delete selected restaurant menu items
 @app.route('/restaurants/<int:restaurant_id>/<int:menu_id>/delete/' , methods= ['GET','POST'])
 def deleteMenuItem(restaurant_id, menu_id):
     editItem = session.query(MenuItem).filter_by(id = menu_id).one()
