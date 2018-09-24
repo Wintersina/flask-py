@@ -32,7 +32,6 @@ def restaurantMenu(restaurant_id):
     menuItems = session.query(MenuItem).filter_by(restaurant_id = restaurant_id)
     restaurantFinalResult = restaurantResult.one()
     output = render_template('menu.html', restaurant=restaurantFinalResult, menuItems = menuItems)
-
     return output
 
 #Create a new menu item for the selected restaurant
@@ -42,7 +41,7 @@ def newMenuItem(restaurant_id):
         newItem = MenuItem(item_name = request.form['name'],restaurant_id = restaurant_id)
         session.add(newItem)
         session.commit()
-        flash("Menu item created!")
+        flash("%s created!"%  newItem.item_name)
         output = redirect(url_for('restaurantMenu', restaurant_id = restaurant_id))
         return output
     else:
@@ -54,10 +53,11 @@ def newMenuItem(restaurant_id):
 def editMenuItem(restaurant_id, menu_id):
     editItem = session.query(MenuItem).filter_by(id = menu_id).one()
     if request.method == 'POST':
+        before_update_name = editItem.item_name
         editItem.item_name = request.form['name']
         session.add(editItem)
         session.commit()
-        flash("Menu item edited!!")
+        flash("%s updated to %s" % (before_update_name,editItem.item_name ))
         output = redirect(url_for('restaurantMenu', restaurant_id = restaurant_id))
         return output
     else:
@@ -67,15 +67,16 @@ def editMenuItem(restaurant_id, menu_id):
 # delete selected restaurant menu items
 @app.route('/restaurants/<int:restaurant_id>/<int:menu_id>/delete/' , methods= ['GET','POST'])
 def deleteMenuItem(restaurant_id, menu_id):
-    editItem = session.query(MenuItem).filter_by(id = menu_id).one()
+    deleteMenuItem = session.query(MenuItem).filter_by(id = menu_id).one()
     if request.method == 'POST':
-        session.delete(editItem)
+        item_name = deleteMenuItem.item_name
+        session.delete(deleteMenuItem)
         session.commit()
-        flash("Menu item DELETEEEEED!")
+        flash("%s Deleted!" % item_name)
         output = redirect(url_for('restaurantMenu', restaurant_id = restaurant_id))
         return output
     else:
-        output = render_template('delete.html',restaurant_id= restaurant_id, menu_id=menu_id,i_name=editItem.item_name)
+        output = render_template('delete.html',restaurant_id= restaurant_id, menu_id=menu_id,i_name=deleteMenuItem.item_name)
         return output
 
 if __name__ == '__main__':
