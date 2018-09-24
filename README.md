@@ -5,7 +5,7 @@ Restaurant menu webapp written in flask.
 ### needs:
 python3, flask, sqlalchamey, sqlite
 
-###routes:
+### routes:
 * restaurants per restaurants id
     * /restaurants/1/
     * /restaurants/1/JSON/
